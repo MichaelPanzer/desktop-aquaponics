@@ -5,14 +5,17 @@
 
 class TimePoint{
   private:
-    int hour;
-    int min;
-    float intensity;
+    uint8_t PWM;
+    uint16_t asMin(uint8_t hour, uint8_t min);
+    uint16_t totMins;
+
+
+
   public:
-    TimePoint(int hour, int min, float intensity);
-    int asMin();
-    int getIntensity(); 
-    float testIntensity();
+    TimePoint(uint8_t hour, uint8_t min, float intensity);
+    uint8_t getPWM(); 
+    uint16_t getMins();
+
 };
 
 #endif
