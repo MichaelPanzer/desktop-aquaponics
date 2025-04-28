@@ -37,12 +37,13 @@
     4. 5v water pump [Aliexpress Link](https://www.aliexpress.us/item/3256805952358877.html?spm=a2g0o.order_list.order_list_main.17.379418025KtPlN&gatewayAdapt=glo2usa)
     5. 3W led driver module [Amazon Link](https://www.amazon.com/Driver-Constant-Current-Control-Dimming/dp/B0CGVYYLKZ/ref=sr_1_4?crid=3G5SYCTNR8UDB&dib=eyJ2IjoiMSJ9.wtEpYM1yRroDSWxWw5KBAdFXqoRvQvgpNcZt_QX1c16dmgZPloWZ6nbMmLi9tAN4RE9eQBGMHlHb8Ju5BoR15L3AYt7ExyzZlCSQwt2lRYMVXTwbYqrgk6cAWlFZWaRQMmVNGMFYJIN01s3SrCVXIUklyqkpVP6Z2MQMwTNq5AoKljdWlLlWfq8ySNgW9fUWZ_xEFsEi0crk-OOY4bPg9OKJ5HWBgXTRKMvIYYE3f3ruKqYUfttN0P09Nrv-fppROAAp5QMJXHRuLfOmzFHmQnW7ftMeENsHkTsEGY5F9Bs.km8W4f6V5jBGLfQLTl5Zxjtze2jf92vS0yjaxtsSVAw&dib_tag=se&keywords=3W+5-35V+LED+Driver+700mA+PWM+Dimming+DC+to+DC+Step-Down+Constant+Current&qid=1745792808&s=industrial&sprefix=%2Cindustrial%2C565&sr=1-4)
     6. Bridgelux EB Series COB module [Digikey Link](https://www.digikey.com/en/products/detail/bridgelux/BXEB-L0280Z-35E1000-C-B3/7907665)
+    7. 1307 RTC Module [Amazon Link](https://www.amazon.com/Ximimark-DS1307-AT24C32-Module-Arduino/dp/B07TVMVDDP?&linkCode=sl1&tag=zlufy-20&linkId=ada792ca489cc91801611fdefc5786f5&language=en_US&ref_=as_li_ss_tl)
     7. Mosfet [Digikey Lin](https://www.digikey.com/en/products/detail/nexperia-usa-inc/PSMN1R2-30YLC-115/2674281)
     8. 270 ohm Resistor
     9. 12k ohm Resistor
     10. 1N4001 Diode
-    8. Power Supply: Use a 19.5v barrel-styple laptop charger with appropriate current for the amount of LED modules. I used an old HP power supply I had laying around but 19.5v is pretty common for laptop chargers. A usb-c pd charger will not work as it relies on communication between the charger and device to determine power level. 
-    9. MISC. strip pins, 20-26 ga solid core wire
+    8. Power Supply: Use a 19.5v barrel-styple laptop charger with appropriate current for the amount of LED modules. 19.5v is pretty common for laptop chargers so you should be able to source something used for cheap. A usb-c pd charger will not work as it relies on communication between the charger and device to determine power level. 
+    9. MISC - strip pins, 20-26 ga solid core wire, dupont connectors
 2. Solder the components to create the circuit shown in the diagram. (DIAGRAM TO BE ADDED LATER)
 
 ## Final assembly
