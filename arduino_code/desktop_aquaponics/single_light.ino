@@ -3,17 +3,21 @@
 
 RTC_DS1307 rtc;
 uint8_t tankLight = 3;      // LED connected to digital pin 3
+uint8_t bedLight = 5;
 uint8_t pump = 11;
 uint8_t pumpStatus = LOW;
 uint32_t previousTime = 0;
-uint16_t onTime = 45;
-uint16_t offTime = 85;
+uint16_t onTime = 35;
+uint16_t offTime = 80;
 
 
 
 // This array defines lighting profile
-TimePoint timePoints[] = {TimePoint(0,0,0.0), TimePoint(9, 30, 0.0), TimePoint(10, 0, 0.2), TimePoint(14, 30, 0.2), TimePoint(15, 0, 0.9), TimePoint(22, 30, 0.9), TimePoint(23, 0, 0.0)};
-uint8_t n;
+TimePoint tankPoints[] = {TimePoint(0,0,0.0), TimePoint(9, 30, 0.0), TimePoint(10, 0, 0.2), TimePoint(14, 30, 0.2), TimePoint(15, 0, 0.9), TimePoint(22, 30, 0.9), TimePoint(23, 0, 0.0)};
+uint8_t nT;
+
+TimePoint bedPoints[] = {TimePoint(0,0,0.0), TimePoint(9, 30, 0.0), TimePoint(10, 0, 0.7), TimePoint(22, 30, 0.7), TimePoint(23, 0, 0.0)};
+uint8_t nB;
 
 uint8_t findIntensity(uint8_t hour, uint8_t min, TimePoint points[], uint8_t n){ 
   TimePoint low = TimePoint(0,-1,0);
@@ -55,9 +59,11 @@ void setup () {
     // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
   }
 
-  n = sizeof(timePoints) / sizeof(timePoints[0]);
+  nT = sizeof(tankPoints) / sizeof(tankPoints[0]);
+  nB = sizeof(bedPoints) / sizeof(bedPoints[0]);
 
   pinMode(tankLight, OUTPUT);
+  pinMode(bedLight, OUTPUT);
   pinMode(pump, OUTPUT);
 }
 
@@ -66,14 +72,15 @@ void loop () {
   DateTime now = rtc.now();
 
   //Set light intenisty
-  int inten = findIntensity(now.hour(), now.minute(), timePoints, n);
+  int inten = findIntensity(now.hour(), now.minute(), tankPoints, nT);
   analogWrite(tankLight, inten);
+  analogWrite(bedLight, findIntensity(now.hour(), now.minute(), bedPoints, nB));
 
   Serial.print("hour :");
   Serial.print(now.hour());
   Serial.print(", minute: ");
   Serial.print(now.minute());
-  Serial.print(", PWM value: ");
+  Serial.print(", tank light value: ");
   Serial.print(inten);
 
 
@@ -95,5 +102,5 @@ void loop () {
   Serial.print(", pump pin: ");
   Serial.println(pumpStatus);
 
-  delay(500);
+  delay(1000);
 }
