@@ -42,6 +42,7 @@
     8. 270 ohm Resistor
     9. 12k ohm Resistor
     10. 1N4001 Diode
+    11. 10nf capacitor 
     8. Power Supply: Use a 19.5v barrel-styple laptop charger with appropriate current for the amount of LED modules. 19.5v is pretty common for laptop chargers so you should be able to source something used for cheap. A usb-c pd charger will not work as it relies on communication between the charger and device to determine power level. 
     9. MISC - strip pins, 20-26 ga solid core wire, dupont connectors
 2. Solder the components to create the circuit shown in the diagram. (DIAGRAM TO BE ADDED LATER)
