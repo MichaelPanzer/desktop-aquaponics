@@ -2,23 +2,32 @@
 #include "TimePoint.h"
 
 RTC_DS1307 rtc;
-uint8_t tankLight = 3;      // LED connected to digital pin 3
+
+//Pin assignments
+uint8_t tankLight = 3;      
 uint8_t bedLight = 5;
 uint8_t pump = 11;
-uint8_t pumpStatus = LOW;
+
+//status variables
+bool pumpOn = true;
 uint32_t previousTime = 0;
-uint16_t onTime = 35;
-uint16_t offTime = 80;
+
+//pump timing
+uint16_t onTime = 45;
+uint16_t offTime = 70;
 
 
+//TimePoint(hour, minute, intentisy [float from 0.0-1.0])
 
-// This array defines lighting profile
+// Tank lighting profile
 TimePoint tankPoints[] = {TimePoint(0,0,0.0), TimePoint(9, 30, 0.0), TimePoint(10, 0, 0.2), TimePoint(14, 30, 0.2), TimePoint(15, 0, 0.9), TimePoint(22, 30, 0.9), TimePoint(23, 0, 0.0)};
 uint8_t nT;
 
+//Grow bed lighting profile
 TimePoint bedPoints[] = {TimePoint(0,0,0.0), TimePoint(9, 30, 0.0), TimePoint(10, 0, 0.7), TimePoint(22, 30, 0.7), TimePoint(23, 0, 0.0)};
 uint8_t nB;
 
+//Function linearly interpolates intensity from lighting profile array, returns PWM value of output pin 
 uint8_t findIntensity(uint8_t hour, uint8_t min, TimePoint points[], uint8_t n){ 
   TimePoint low = TimePoint(0,-1,0);
   TimePoint high = TimePoint(24,1,0);
@@ -49,6 +58,7 @@ void setup () {
     while (1) delay(10);
   }
 
+  //Sets time if rtc not running
   if (! rtc.isrunning()) {
     Serial.println("RTC is NOT running, let's set the time!");
     // When time needs to be set on a new device, or after a power loss, the
@@ -59,9 +69,11 @@ void setup () {
     // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
   }
 
+  //Calculate the length of lighting proile arrays
   nT = sizeof(tankPoints) / sizeof(tankPoints[0]);
   nB = sizeof(bedPoints) / sizeof(bedPoints[0]);
 
+  //Define pins
   pinMode(tankLight, OUTPUT);
   pinMode(bedLight, OUTPUT);
   pinMode(pump, OUTPUT);
@@ -72,7 +84,7 @@ void loop () {
   DateTime now = rtc.now();
 
   //Set light intenisty
-  int inten = findIntensity(now.hour(), now.minute(), tankPoints, nT);
+  uint8_t inten = findIntensity(now.hour(), now.minute(), tankPoints, nT);
   analogWrite(tankLight, inten);
   analogWrite(bedLight, findIntensity(now.hour(), now.minute(), bedPoints, nB));
 
@@ -83,24 +95,23 @@ void loop () {
   Serial.print(", tank light value: ");
   Serial.print(inten);
 
-
   //Set pump status
   uint32_t deltaTime = now.unixtime()-previousTime;
   Serial.print(", delta time: ");
   Serial.print(deltaTime);
 
-
-  if(pumpStatus == HIGH && (deltaTime) > onTime){
-    pumpStatus = LOW;
+  if(pumpOn == true && deltaTime > onTime){
+    pumpOn = false;
     previousTime = now.unixtime();
-  } else if(pumpStatus == LOW && (deltaTime) > offTime){
-    pumpStatus = HIGH;
+    digitalWrite(pump, LOW);
+  } else if(pumpOn == false && deltaTime > offTime){
+    pumpOn = true;
     previousTime = now.unixtime();
-  }
-  digitalWrite(pump, pumpStatus);
+    digitalWrite(pump, HIGH);
+  } 
 
-  Serial.print(", pump pin: ");
-  Serial.println(pumpStatus);
+  Serial.print(", pump on: ");
+  Serial.println(pumpOn);
 
   delay(1000);
 }
