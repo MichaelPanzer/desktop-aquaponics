@@ -13,19 +13,22 @@ bool pumpOn = true;
 uint32_t previousTime = 0;
 
 //pump timing
-uint16_t onTime = 45;
-uint16_t offTime = 70;
+uint16_t onTime = 35;
+uint16_t offTime = 60;
 
 
 //TimePoint(hour, minute, intentisy [float from 0.0-1.0])
 
 // Tank lighting profile
-TimePoint tankPoints[] = {TimePoint(0,0,0.0), TimePoint(9, 30, 0.0), TimePoint(10, 0, 0.2), TimePoint(14, 30, 0.2), TimePoint(15, 0, 0.9), TimePoint(22, 30, 0.9), TimePoint(23, 0, 0.0)};
+TimePoint tankPoints[] = {TimePoint(0,0,0.0), TimePoint(9, 30, 0.0), TimePoint(10, 0, 0.2), TimePoint(14, 30, 0.2), TimePoint(15, 0, 0.9), TimePoint(22, 30, 0.9), TimePoint(23, 30, 0.0)};
 uint8_t nT;
 
 //Grow bed lighting profile
-TimePoint bedPoints[] = {TimePoint(0,0,0.0), TimePoint(9, 30, 0.0), TimePoint(10, 0, 0.7), TimePoint(22, 30, 0.7), TimePoint(23, 0, 0.0)};
+TimePoint bedPoints[] = {TimePoint(0,0,0.0), TimePoint(9, 30, 0.0), TimePoint(10, 0, 0.7), TimePoint(22, 30, 0.7), TimePoint(23, 30, 0.0)};
 uint8_t nB;
+
+uint8_t intenT, intenB;
+uint32_t deltaTime;
 
 //Function linearly interpolates intensity from lighting profile array, returns PWM value of output pin 
 uint8_t findIntensity(uint8_t hour, uint8_t min, TimePoint points[], uint8_t n){ 
@@ -45,7 +48,12 @@ uint8_t findIntensity(uint8_t hour, uint8_t min, TimePoint points[], uint8_t n){
   }
 
   //Linear interpolation to find the current intensity
-  return low.getPWM() + (high.getPWM()-low.getPWM())*(totMins-low.getMins())/(high.getMins()-low.getMins());
+  //Comparison is to mitigate 8 bit unsigned integer underflow errors
+  if(high.getPWM() < low.getPWM()){
+    return low.getPWM() - (low.getPWM()-high.getPWM())*(totMins-low.getMins()) / (high.getMins()-low.getMins());
+  } else{
+    return low.getPWM() + (high.getPWM()-low.getPWM())*(totMins-low.getMins()) / (high.getMins()-low.getMins());
+  }
 
 }
 
@@ -84,19 +92,22 @@ void loop () {
   DateTime now = rtc.now();
 
   //Set light intenisty
-  uint8_t inten = findIntensity(now.hour(), now.minute(), tankPoints, nT);
-  analogWrite(tankLight, inten);
-  analogWrite(bedLight, findIntensity(now.hour(), now.minute(), bedPoints, nB));
+  intenT = findIntensity(now.hour(), now.minute(), tankPoints, nT);
+  analogWrite(tankLight, intenT);
+  intenB = findIntensity(now.hour(), now.minute(), bedPoints, nB);
+  analogWrite(bedLight, intenB);
 
   Serial.print("hour :");
   Serial.print(now.hour());
   Serial.print(", minute: ");
   Serial.print(now.minute());
-  Serial.print(", tank light value: ");
-  Serial.print(inten);
+  Serial.print(", tank light: ");
+  Serial.print(intenT);
+  Serial.print(", bed light: ");
+  Serial.print(intenB);
 
   //Set pump status
-  uint32_t deltaTime = now.unixtime()-previousTime;
+  deltaTime = now.unixtime()-previousTime;
   Serial.print(", delta time: ");
   Serial.print(deltaTime);
 
